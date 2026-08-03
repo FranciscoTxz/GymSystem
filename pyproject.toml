@@ -1,0 +1,25 @@
+[project]
+name = "gymsystem"
+version = "0.1.0"
+description = "A simple gym management system"
+readme = "README.md"
+authors = [
+    { name = "FranciscoTxz", email = "angelftv2002@hotmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.141.1",
+    "pydantic[email]>=2.13.4",
+    "uvicorn>=0.52.1",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.0",
+    "pre-commit>=4.6.1",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-env>=1.7.0",
+    "python-dotenv>=1.2.2",
+    "ruff>=0.16.1",
+]
