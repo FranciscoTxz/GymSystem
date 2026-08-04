@@ -24,3 +24,6 @@ dev = [
     "python-dotenv>=1.2.2",
     "ruff>=0.16.1",
 ]
+
+[tool.ty.environment]
+extra-paths = ["src"]
