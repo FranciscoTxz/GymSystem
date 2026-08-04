@@ -1,0 +1,39 @@
+services:
+  mongodb_gs:
+    image: mongo:7.0
+    container_name: mongodb_gymsystem
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_gymsystem_data:/data/db
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'mongosh --eval ''db.adminCommand("ping")'' || mongo --eval ''db.adminCommand("ping")'' || exit 1',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  api_handler_gs:
+    container_name: gymsystem_api_handler
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      mongodb_gs:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+volumes:
+  mongodb_gymsystem_data:

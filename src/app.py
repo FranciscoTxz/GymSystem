@@ -1,7 +1,20 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+from common.exceptions_handler import register_exception_handlers
+from services import connect_to_mongodb, disconnect_from_mongodb
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    connect_to_mongodb()
+    yield
+    disconnect_from_mongodb()
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -10,6 +23,8 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE"],
     allow_headers=["*"],
 )
+
+register_exception_handlers(app)
 
 
 @app.get("/")
