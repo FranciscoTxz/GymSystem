@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.141.1",
+    "mongoengine>=0.29.3",
     "pydantic[email]>=2.13.4",
     "uvicorn>=0.52.1",
 ]
@@ -23,3 +24,6 @@ dev = [
     "python-dotenv>=1.2.2",
     "ruff>=0.16.1",
 ]
+
+[tool.ty.environment]
+extra-paths = ["src"]
