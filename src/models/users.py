@@ -1,9 +1,11 @@
 from datetime import datetime
 from typing import ClassVar
+from zoneinfo import ZoneInfo
 
 from mongoengine import (
     BinaryField,
     BooleanField,
+    DateField,
     DateTimeField,
     Document,
     EmailField,
@@ -11,6 +13,8 @@ from mongoengine import (
     StringField,
     URLField,
 )
+
+from schemas.user_schema import UserState
 
 
 class Users(Document):
@@ -24,12 +28,12 @@ class Users(Document):
     email = EmailField(default=None)
     emergency_contact = StringField(required=True)
     photo_url = URLField(default=None)
-    state = StringField(default="ACTIVE")
+    state = StringField(default=UserState.active)
     fingerprint_template = BinaryField(default=None)
-    last_visit = DateTimeField(default=datetime.now)
-    next_payment = DateTimeField(required=True)
+    last_visit = DateTimeField(default=datetime.now(tz=ZoneInfo("America/Mexico_City")))
+    next_payment = DateField(required=True)
     enabled = BooleanField(default=True)
-    created_at = DateTimeField(default=datetime.now)
+    created_at = DateTimeField(default=datetime.now(tz=ZoneInfo("America/Mexico_City")))
 
     meta: ClassVar[dict[str, object]] = {
         "collection": "users",
