@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import ClassVar
+from zoneinfo import ZoneInfo
 
 from mongoengine import (
     BooleanField,
+    DateField,
     DateTimeField,
     Document,
     EmailField,
@@ -18,12 +20,12 @@ class Admins(Document):
     first_name = StringField(required=True)
     last_name = StringField(required=True)
     full_name = StringField(required=True)
-    birthdate = StringField(default=None)
+    birthdate = DateField(default=None)
     phone_number = StringField(default=None)
     type = StringField(default=AdminType.MID)
-    last_login = DateTimeField(default=datetime.now)
+    last_login = DateTimeField(default=datetime.now(tz=ZoneInfo("America/Mexico_City")))
     enabled = BooleanField(default=True)
-    created_at = DateTimeField(default=datetime.now)
+    created_at = DateTimeField(default=datetime.now(tz=ZoneInfo("America/Mexico_City")))
 
     meta: ClassVar[dict[str, object]] = {
         "collection": "admins",
