@@ -1,0 +1,5 @@
+id,days,price,description
+normal,30,50.0,"Standard membership with access to gym equipment and group classes."
+day,1,10.0,"Single day pass for one-time access to the gym."
+weekly,7,30.0,"Weekly membership for short-term access to the gym."
+student,30,40.0,"Discounted membership for students with valid ID."

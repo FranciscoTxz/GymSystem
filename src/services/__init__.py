@@ -21,7 +21,7 @@ def connect_to_mongodb() -> None:
             )
         else:
             client = connect(
-                "tests",
+                "gymsystem",
                 host="localhost",
                 port=27017,
                 alias="default",
@@ -31,6 +31,7 @@ def connect_to_mongodb() -> None:
         client.admin.command("ping")
         _LOG.info("Connected to MongoDB successfully")
         _seed_admins_table()
+        _seed_memberships_table()
     except PyMongoError:
         with suppress(Exception):
             disconnect(alias="default")
@@ -46,11 +47,11 @@ def _seed_admins_table() -> None:
         file_path = "templates/admins_seed_example.csv"
         fieldnames = [
             "email",
+            "password",
             "first_name",
             "last_name",
             "birthdate",
             "phone_number",
-            "password",
         ]
         with open(file_path, encoding="utf-8") as file:
             reader = csv.reader(file)
@@ -71,6 +72,29 @@ def _seed_admins_table() -> None:
                 ).save()
 
         _LOG.info("Admins collection seeded successfully")
+
+
+def _seed_memberships_table() -> None:
+    from models.memberships import Memberships
+
+    if Memberships.objects.count() == 0:
+        _LOG.info("Seeding Memberships collection...")
+        file_path = "templates/memberships_seed_example.csv"
+        fieldnames = ["id", "days", "price", "description"]
+
+        with open(file_path, encoding="utf-8") as file:
+            reader = csv.reader(file)
+            next(reader)  # skip header
+            for row in reader:
+                row_dict = dict(zip(fieldnames, row))
+                Memberships(
+                    id=row_dict["id"],
+                    days=int(row_dict["days"]),
+                    price=float(row_dict["price"]),
+                    description=row_dict["description"],
+                ).save()
+
+        _LOG.info("Memberships collection seeded successfully")
 
 
 def disconnect_from_mongodb() -> None:
