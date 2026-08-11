@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from common.exceptions_handler import register_exception_handlers
+from routers import admin_router
 from services import connect_to_mongodb, disconnect_from_mongodb
 
 
@@ -25,6 +26,8 @@ app.add_middleware(
 )
 
 register_exception_handlers(app)
+
+app.include_router(router=admin_router)
 
 
 @app.get("/")
