@@ -8,7 +8,9 @@ from mongoengine import DoesNotExist
 
 from common.constants import SECRET_KEY
 from models.admins import Admins
-from schemas.admin_schema import AdminType
+from schemas.admin_schema import AdminInfo, AdminType
+
+ADMIN_NOT_FOUND = "Admin profile not found."
 
 
 class AdminService:
@@ -69,7 +71,21 @@ class AdminService:
             algorithm="HS256",
         )
         return {
-            "id_token": token,
+            "access_token": token,
             "admin_name": f"{admin.full_name}",
             "role": f"{admin.type}",
         }
+
+    @staticmethod
+    def get_admin_info(email: str):
+        try:
+            admin = Admins.objects.get(email=email)
+        except DoesNotExist:
+            raise HTTPException(status_code=404, detail=ADMIN_NOT_FOUND)
+        return AdminInfo(
+            email=admin.email,
+            full_name=admin.full_name,
+            birthdate=admin.birthdate,
+            phone_number=admin.phone_number,
+            type=admin.type,
+        )
