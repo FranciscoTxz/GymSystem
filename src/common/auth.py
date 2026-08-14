@@ -19,7 +19,12 @@ def admin_required(types: set[str] | None = None):
                     status_code=401, detail="Unauthorized: Missing or invalid token"
                 )
 
-            admin_info = AdminService.get_admin_info(email)
+            admin_info = AdminService.get_full_admin_info(email)
+
+            if not admin_info.enabled:
+                raise HTTPException(
+                    status_code=403, detail="Forbidden: Admin account is disabled"
+                )
 
             if types and admin_info.type.upper() not in types:
                 raise HTTPException(

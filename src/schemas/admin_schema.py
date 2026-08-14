@@ -5,7 +5,7 @@ from enum import StrEnum
 from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 PHONE_RE = re.compile(r"^\d{10,12}$")
@@ -30,9 +30,8 @@ class AdminInfo(BaseModel):
 
 
 class AdminInfoFull(AdminInfo):
-    password_hash: str
-    first_name: str
-    last_name: str
+    enabled: bool
+    created_at: datetime
     last_login: datetime
 
 
@@ -124,6 +123,7 @@ class AdminPasswordUpdate(BaseModel):
 
 
 class UpdateAdmin(BaseModel):
+    email: EmailStr | None = None
     phone_number: str | None = None
     type: AdminType | None = None
 
@@ -136,11 +136,14 @@ class UpdateAdmin(BaseModel):
             )
         return v
 
-    @field_validator("phone_number", "type", mode="before")
-    def at_least_one_field(cls, v, info):
-        if info.data == {} and v is None:
+    @model_validator(mode="before")
+    @classmethod
+    def at_least_one_field(cls, values):
+        if not isinstance(values, dict) or not any(
+            values.get(field) is not None for field in ("phone_number", "type")
+        ):
             raise HTTPException(
                 status_code=400,
                 detail="At least one field must be provided",
             )
-        return v
+        return values
