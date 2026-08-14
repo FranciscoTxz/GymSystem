@@ -8,7 +8,7 @@ from mongoengine import DoesNotExist
 
 from common.constants import SECRET_KEY
 from models.admins import Admins
-from schemas.admin_schema import AdminInfo, AdminType
+from schemas.admin_schema import AdminInfo, AdminInfoFull, AdminType
 
 ADMIN_NOT_FOUND = "Admin profile not found."
 
@@ -41,7 +41,7 @@ class AdminService:
                 type=type,
             )
             admin.save()
-            return {"result": "Admin registered successfully."}
+            return {"message": "Admin registered successfully."}
 
     @staticmethod
     def login_admin(email: str, password: str):
@@ -89,3 +89,79 @@ class AdminService:
             phone_number=admin.phone_number,
             type=admin.type,
         )
+
+    @staticmethod
+    def get_full_admin_info(email: str):
+        try:
+            admin = Admins.objects.get(email=email)
+        except DoesNotExist:
+            raise HTTPException(status_code=404, detail=ADMIN_NOT_FOUND)
+        return AdminInfoFull(
+            email=admin.email,
+            full_name=admin.full_name,
+            birthdate=admin.birthdate,
+            phone_number=admin.phone_number,
+            type=admin.type,
+            enabled=admin.enabled,
+            created_at=admin.created_at,
+            last_login=admin.last_login,
+        )
+
+    @staticmethod
+    def update_admin_info(email: str, phone_number: str | None, type: AdminType | None):
+        try:
+            admin = Admins.objects.get(email=email)
+        except DoesNotExist:
+            raise HTTPException(status_code=404, detail=ADMIN_NOT_FOUND)
+
+        if phone_number is not None:
+            admin.phone_number = phone_number
+        if type is not None:
+            admin.type = type
+
+        admin.save()
+        return {"message": f"Admin {admin.full_name} information updated successfully."}
+
+    @staticmethod
+    def update_admin_password(email: str, old_password: str, new_password: str):
+        try:
+            admin = Admins.objects.get(email=email)
+        except DoesNotExist:
+            raise HTTPException(status_code=404, detail=ADMIN_NOT_FOUND)
+
+        if admin.password_hash != sha1(f"{old_password}{email}".encode()).hexdigest():
+            raise HTTPException(status_code=400, detail="Invalid old password")
+
+        admin.password_hash = sha1(f"{new_password}{email}".encode()).hexdigest()
+        admin.save()
+        return {"message": f"Admin {admin.full_name} password updated successfully."}
+
+    @staticmethod
+    def deactivate_admin(email: str):
+        try:
+            admin = Admins.objects.get(email=email)
+        except DoesNotExist:
+            raise HTTPException(status_code=404, detail=ADMIN_NOT_FOUND)
+
+        admin.enabled = False
+        admin.save()
+
+    @staticmethod
+    def activate_admin(email: str):
+        try:
+            admin = Admins.objects.get(email=email)
+        except DoesNotExist:
+            raise HTTPException(status_code=404, detail=ADMIN_NOT_FOUND)
+
+        admin.enabled = True
+        admin.save()
+        return {"message": f"Admin {admin.full_name} account activated successfully."}
+
+    @staticmethod
+    def delete_admin(email: str):
+        try:
+            admin = Admins.objects.get(email=email)
+        except DoesNotExist:
+            raise HTTPException(status_code=404, detail=ADMIN_NOT_FOUND)
+
+        admin.delete()
