@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from common.auth import admin_required
 from schemas.admin_schema import (
@@ -18,8 +18,23 @@ require_max_admin = admin_required({"MAX"})
 require_min_admin = admin_required({"MIN", "MAX", "MID"})
 
 
+@router.get("", status_code=200)
+def get_all_admins(
+    _: Annotated[AdminInfo, Depends(require_max_admin)],
+    next_cursor: str | None = Query(default=None),
+    limit: int = Query(default=15, ge=1),
+    name: str | None = Query(default=None),
+):
+    return AdminService.get_all_admins_info(
+        name=name, cursor_id=next_cursor, limit=limit
+    )
+
+
 @router.post("/sign-up", status_code=201)
-async def sign_up_admin(payload: SignUpAdmin):
+async def sign_up_admin(
+    payload: SignUpAdmin,
+    _: Annotated[AdminInfo, Depends(require_max_admin)],
+):
     return AdminService.signup_admin(**payload.model_dump())
 
 
