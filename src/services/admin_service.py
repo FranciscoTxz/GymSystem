@@ -4,7 +4,7 @@ from zoneinfo import ZoneInfo
 
 import jwt
 from fastapi import HTTPException
-from mongoengine import DoesNotExist
+from mongoengine import DoesNotExist, Q
 
 from common.constants import SECRET_KEY
 from models.admins import Admins
@@ -106,6 +106,48 @@ class AdminService:
             created_at=admin.created_at,
             last_login=admin.last_login,
         )
+
+    @staticmethod
+    def _paginate_admins(query, limit: int):
+        items = list(
+            Admins.objects(query)
+            .order_by("email")
+            .limit(limit + 1)
+            .only("email", "full_name", "type", "enabled")
+        )
+
+        if not items:
+            return {
+                "items": [],
+                "next_cursor": None,
+                "has_next": False,
+            }
+
+        has_next = len(items) > limit
+        page_items = items[:limit]
+        next_cursor = page_items[-1].email if has_next and page_items else None
+
+        items = [item.to_mongo() for item in page_items]
+
+        return {
+            "items": items,
+            "next_cursor": str(next_cursor) if next_cursor else None,
+            "has_next": has_next,
+        }
+
+    @staticmethod
+    def get_all_admins_info(
+        name: str | None = None, cursor_id: str | None = None, limit: int = 15
+    ):
+        if name:
+            query = Q(full_name__icontains=name)
+        else:
+            query = Q()
+
+        if cursor_id:
+            query &= Q(email__gt=cursor_id)
+
+        return AdminService._paginate_admins(query, limit)
 
     @staticmethod
     def update_admin_info(email: str, phone_number: str | None, type: AdminType | None):
