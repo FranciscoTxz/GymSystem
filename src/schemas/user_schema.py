@@ -5,10 +5,13 @@ from enum import StrEnum
 from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 PHONE_RE = re.compile(r"^\d{10,12}$")
+URL_RE = re.compile(
+    r"^(https?://)?(www\.)?([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}(:\d+)?(/.*)?$"
+)
 
 
 class UserState(StrEnum):
@@ -45,11 +48,11 @@ class CreateUser(BaseModel):
     first_name: str = Field(..., min_length=2, max_length=50)
     last_name: str = Field(..., min_length=2, max_length=50)
     birthdate: date
-    phone_number: str = Field(..., min_length=11, max_length=13)
-    email: EmailStr | None
+    phone_number: str = Field(..., min_length=10, max_length=13)
+    email: EmailStr | None = Field(default=None)
     emergency_contact: str = Field(min_length=3)
-    photo_url: str | None
-    fingerprint_template: bytes | None  # TODO: Validate
+    photo_url: str | None = Field(default=None)
+    fingerprint_template: bytes | None = Field(default=None)  # TODO: Validate
 
     @field_validator("first_name", "last_name")
     def name_must_be_alpha(cls, v: str):
@@ -100,19 +103,48 @@ class CreateUser(BaseModel):
 
 
 class UpdateUser(BaseModel):
-    phone_number: str | None = None
-    email: EmailStr | None = None
-    emergency_contact: str | None = None
-    photo_url: str | None = None
+    phone_number: str | None = Field(default=None)
+    email: EmailStr | None = Field(default=None)
+    emergency_contact: str | None = Field(default=None)
+    photo_url: str | None = Field(default=None)
 
-    @field_validator(
-        "phone_number", "email", "emergency_contact", "photo_url", mode="after"
-    )
-    def at_least_one_field(cls, v, info):
-        if all(field_value is None for field_value in info.data.values()):
+    @model_validator(mode="before")
+    @classmethod
+    def at_least_one_field(cls, values):
+        if not isinstance(values, dict) or not any(
+            values.get(field) is not None
+            for field in ("phone_number", "email", "emergency_contact", "photo_url")
+        ):
             raise HTTPException(
                 status_code=400,
                 detail="At least one field must be provided",
+            )
+        return values
+
+    @field_validator("phone_number")
+    def phone_must_be_polish_format(cls, v: str):
+        if v and not PHONE_RE.fullmatch(v.strip()):
+            raise HTTPException(
+                status_code=400,
+                detail="Phone number must be 10 to 12 digits",
+            )
+        return v
+
+    @field_validator("emergency_contact", mode="before")
+    def validate_len(cls, v: str, info):
+        if v is not None and len(v) < 3:
+            raise HTTPException(
+                status_code=400,
+                detail=f"{info.field_name} must be at least 3 characters long",
+            )
+        return v
+
+    @field_validator("photo_url", mode="before")
+    def validate_URL(cls, v: str, info):
+        if v is not None and URL_RE.fullmatch(v.strip()) is None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"{info.field_name} must be a valid URL",
             )
         return v
 

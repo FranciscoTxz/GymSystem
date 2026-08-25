@@ -45,8 +45,8 @@ class SignUpAdmin(BaseModel):
     password: str = Field(..., min_length=8, max_length=16)
     first_name: str = Field(..., min_length=2, max_length=50)
     last_name: str = Field(..., min_length=2, max_length=50)
-    birthdate: date | None
-    phone_number: str | None
+    birthdate: date | None = Field(default=None)
+    phone_number: str | None = Field(default=None)
     type: AdminType = Field(default=AdminType.MID)
 
     @field_validator("password")
@@ -123,9 +123,9 @@ class AdminPasswordUpdate(BaseModel):
 
 
 class UpdateAdmin(BaseModel):
-    email: EmailStr | None = None
-    phone_number: str | None = None
-    type: AdminType | None = None
+    email: EmailStr | None = Field(default=None)
+    phone_number: str | None = Field(default=None)
+    type: AdminType | None = Field(default=None)
 
     @field_validator("phone_number")
     def phone_must_be_polish_format(cls, v: str):
