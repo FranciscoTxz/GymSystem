@@ -7,6 +7,7 @@ from mongoengine import DoesNotExist, Q
 from models.memberships import Memberships
 from models.users import Users
 from schemas.user_schema import UserInfo, UserInfoFull, UserState
+from services.statistics_service import StatisticsService
 
 USER_NOT_FOUND = "User not found."
 MEMBERSHIP_NOT_FOUND = "Membership not found."
@@ -84,6 +85,10 @@ class UserService:
             next_payment=today + timedelta(days=membership_plan.days),
         )
         user.save()
+        StatisticsService.add_membership_sale(
+            membership=membership,
+            amount=membership_plan.price,
+        )
         return {"message": "User registered successfully.", "user_id": user.id}
 
     @staticmethod
@@ -211,6 +216,10 @@ class UserService:
         user.membership = membership
         user.next_payment = start_date + timedelta(days=membership_plan.days)
         user.save()
+        StatisticsService.add_membership_sale(
+            membership=membership,
+            amount=membership_plan.price,
+        )
         return {"message": f"User {user.full_name} membership updated successfully."}
 
     @staticmethod

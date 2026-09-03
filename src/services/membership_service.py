@@ -10,7 +10,7 @@ MEMBERSHIP_NOT_FOUND = "Membership not found."
 class MembershipService:
     @staticmethod
     def get_membership(
-        membership_id: str | None = None,
+        membership_id: str,
     ):
         try:
             membership = Memberships.objects.get(id=membership_id)
