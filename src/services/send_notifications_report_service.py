@@ -2,7 +2,9 @@ import asyncio
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
+from common.constants import ADMIN_EMAIL
 from common.log_helper import get_logger
+from models.statistics import Statistics
 from models.users import Users
 from schemas.user_schema import UserState
 from services.email_service import EmailService
@@ -31,4 +33,25 @@ async def send_soon_expired_notifications():
                     subject="Membership Expiration Notice",
                     body="Your membership will expire soon.  Please make the necessary arrangements to renew it.",
                 )
-        await asyncio.sleep(3600)
+        await asyncio.sleep(86450)
+
+
+async def send_statistics_report():
+    while True:
+        now = datetime.now(tz=ZoneInfo("America/Mexico_City"))
+
+        # if now.weekday() == 4:
+        if now.weekday() == 0:
+            _LOG.info("Generating monthly statistics report ...")
+            statistics = Statistics.objects(year=now.year, month=now.month).only(
+                "membership", "sold_memberships", "amount"
+            )
+
+            statistics_dict = [
+                statistic.to_mongo().to_dict() for statistic in statistics
+            ]
+            await EmailService.send_statistics_report(
+                to_email=ADMIN_EMAIL or "", statistics=statistics_dict
+            )
+
+        await asyncio.sleep(86450)
