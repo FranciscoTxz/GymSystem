@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -6,11 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from common.exceptions_handler import register_exception_handlers
 from routers import admin_router, membership_router, statistics_router, user_router
 from services import connect_to_mongodb, disconnect_from_mongodb
+from services.send_notifications_service import send_soon_expired_notifications
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     connect_to_mongodb()
+    asyncio.create_task(send_soon_expired_notifications())
+    # asyncio.create_task(send_statistics_report())
     yield
     disconnect_from_mongodb()
 
