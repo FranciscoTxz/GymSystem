@@ -30,3 +30,25 @@ dev = [
 
 [tool.ty.environment]
 extra-paths = ["src"]
+
+[tool.mypy]
+mypy_path = "src"
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["mongoengine", "mongoengine.*"]
+ignore_missing_imports = true
+follow_untyped_imports = true
+
+
+[[tool.mypy.overrides]]
+module = [
+    "services",
+    "services.admin_service",
+    "services.email_service",
+    "services.membership_service",
+    "services.send_notifications_report_service",
+    "services.statistics_service",
+    "services.user_service"
+]
+disable_error_code = ["attr-defined"]
