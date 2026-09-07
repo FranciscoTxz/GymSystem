@@ -40,8 +40,7 @@ async def send_statistics_report():
     while True:
         now = datetime.now(tz=ZoneInfo("America/Mexico_City"))
 
-        # if now.weekday() == 4:
-        if now.weekday() == 0:
+        if now.weekday() == 4:
             _LOG.info("Generating monthly statistics report ...")
             statistics = Statistics.objects(year=now.year, month=now.month).only(
                 "membership", "sold_memberships", "amount"
