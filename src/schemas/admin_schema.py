@@ -18,7 +18,7 @@ PASSWORD_REJECT = "Password must contain uppercase letters, lowercase letters, n
 class AdminType(StrEnum):
     MAX = "MAX"
     MID = "MID"
-    LOW = "LOW"
+    MIN = "MIN"
 
 
 class AdminInfo(BaseModel):
@@ -47,7 +47,7 @@ class SignUpAdmin(BaseModel):
     last_name: str = Field(..., min_length=2, max_length=50)
     birthdate: date | None = Field(default=None)
     phone_number: str | None = Field(default=None)
-    type: AdminType = Field(default=AdminType.MID)
+    type: AdminType = Field(default=AdminType.MIN)
 
     @field_validator("password")
     def password_must_have(cls, v: str):
