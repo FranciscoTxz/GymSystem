@@ -1,0 +1,7 @@
+info:
+  name: users admin MIN
+  type: folder
+  seq: 6
+
+request:
+  auth: inherit

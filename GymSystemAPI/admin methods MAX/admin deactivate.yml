@@ -1,0 +1,18 @@
+info:
+  name: admin deactivate
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{URL}}/admin/deactivate/admin1@example.com"
+  headers:
+    - name: Authorization
+      value: "{{TOKEN_ADMIN}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

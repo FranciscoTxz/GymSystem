@@ -1,0 +1,30 @@
+info:
+  name: admin_sign-in
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{URL}}/admin/sign-in"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "admin0@example.com",
+        "password": "PassWord1234@"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        var jsonData = res.getBody();
+        bru.setEnvVar("TOKEN_ADMIN", jsonData.access_token);
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

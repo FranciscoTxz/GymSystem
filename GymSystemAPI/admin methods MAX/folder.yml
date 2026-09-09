@@ -1,0 +1,7 @@
+info:
+  name: admin methods MAX
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit
