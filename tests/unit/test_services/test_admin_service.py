@@ -97,7 +97,7 @@ def test_login_admin_rejects_invalid_credentials(monkeypatch, admin):
     with pytest.raises(HTTPException, match="Invalid email or password") as error:
         AdminService.login_admin("admin@example.com", "secret")
 
-    assert error.value.status_code == 400
+    assert error.value.status_code == 401
 
 
 def test_login_admin_rejects_unknown_email(monkeypatch):

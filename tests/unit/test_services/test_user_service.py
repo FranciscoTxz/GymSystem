@@ -1,6 +1,7 @@
 from datetime import UTC, date, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import MagicMock
+from zoneinfo import ZoneInfo
 
 import pytest
 from fastapi import HTTPException
@@ -9,7 +10,7 @@ from mongoengine import DoesNotExist
 from services import user_service as user_module
 from services.user_service import UserService
 
-TODAY = date(2026, 9, 7)
+TODAY = datetime.now(tz=ZoneInfo("America/Mexico_City")).date()
 
 
 def _user(**changes):

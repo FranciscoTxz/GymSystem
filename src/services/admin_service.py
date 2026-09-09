@@ -48,12 +48,12 @@ class AdminService:
         try:
             admin = Admins.objects.get(email=email)
         except DoesNotExist:
-            raise HTTPException(status_code=400, detail="Invalid email or password")
+            raise HTTPException(status_code=401, detail="Invalid email or password")
 
         if (
             admin.password_hash != sha1(f"{password}{email}".encode()).hexdigest()
         ) or not admin.enabled:
-            raise HTTPException(status_code=400, detail="Invalid email or password")
+            raise HTTPException(status_code=401, detail="Invalid email or password")
 
         expire = datetime.now(tz=ZoneInfo("America/Mexico_City")) + timedelta(hours=20)
 
