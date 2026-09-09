@@ -1,0 +1,30 @@
+info:
+  name: create user
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{URL}}/user"
+  headers:
+    - name: Authorization
+      value: "{{TOKEN_ADMIN}}"
+  body:
+    type: json
+    data: |-
+      {
+        "membership": "day",
+        "first_name": "Alex",
+        "last_name": "Martinez",
+        "birthdate": "2000-07-10",
+        "phone_number": "4491231212",
+        "emergency_contact": "My Mama, 4491231212"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

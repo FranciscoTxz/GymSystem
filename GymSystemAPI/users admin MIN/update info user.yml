@@ -1,0 +1,28 @@
+info:
+  name: update info user
+  type: http
+  seq: 6
+
+http:
+  method: PATCH
+  url: "{{URL}}/user/info/2"
+  headers:
+    - name: Authorization
+      value: "{{TOKEN_ADMIN}}"
+  body:
+    type: json
+    data: |-
+      {
+        "phone_number": "4491231212",
+        "email": "angelftv2002@hotmail.com",
+        "emergency_contact": "My Mama: 4491231212",
+        "photo_url": "https://media.cnn.com/api/v1/images/stellar/prod/cnne-245694-selfie-monkey.jpg"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

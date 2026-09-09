@@ -1,0 +1,26 @@
+info:
+  name: admin Info update
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{URL}}/admin/info"
+  headers:
+    - name: Authorization
+      value: "{{TOKEN_ADMIN}}"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "admin1@example.com",
+        "phone_number": "4492003399",
+        "type": "MAX"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

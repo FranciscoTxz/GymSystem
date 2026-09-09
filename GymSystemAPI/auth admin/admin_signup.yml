@@ -1,0 +1,31 @@
+info:
+  name: admin_signup
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{URL}}/admin/sign-up"
+  headers:
+    - name: Authorization
+      value: "{{TOKEN_ADMIN}}"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "admin0@example.com",
+        "password": "PassWord1234@",
+        "first_name": "Francisco",
+        "last_name": "Torres",
+        "birthdate": "2002-07-19",
+        "phone_number": "4492003399",
+        "type": "MAX"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
