@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "gymsystem": {
+      "args": [
+        "run",
+        "python",
+        "mcp_server.py"
+      ],
+      "command": "uv",
+      "env": {
+        "MCP_API_URL": "http://127.0.0.1:8080"
+      },
+      "type": "stdio"
+    }
+  }
+}
