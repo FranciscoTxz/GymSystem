@@ -8,13 +8,20 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "certifi>=2026.7.22",
     "fastapi>=0.141.1",
+    "matplotlib>=3.11.1",
+    "mongoengine>=0.29.3",
     "pydantic[email]>=2.13.4",
+    "pyjwt>=2.13.0",
     "uvicorn>=0.52.1",
 ]
 
 [dependency-groups]
 dev = [
+    "httpx>=0.28.1",
+    "mcp[cli]>=1.13.1,<2",
+    "httpx2>=2.12.0",
     "mypy>=2.3.0",
     "pre-commit>=4.6.1",
     "pytest>=9.1.1",
@@ -22,4 +29,30 @@ dev = [
     "pytest-env>=1.7.0",
     "python-dotenv>=1.2.2",
     "ruff>=0.16.1",
+    "testcontainers>=4.15.0",
 ]
+
+[tool.ty.environment]
+extra-paths = ["src"]
+
+[tool.mypy]
+mypy_path = "src"
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["mongoengine", "mongoengine.*"]
+ignore_missing_imports = true
+follow_untyped_imports = true
+
+
+[[tool.mypy.overrides]]
+module = [
+    "services",
+    "services.admin_service",
+    "services.email_service",
+    "services.membership_service",
+    "services.send_notifications_report_service",
+    "services.statistics_service",
+    "services.user_service"
+]
+disable_error_code = ["attr-defined"]

@@ -1,0 +1,19 @@
+info:
+  name: info user
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{URL}}/user/info/1"
+  headers:
+    - name: Authorization
+      value: "{{TOKEN_ADMIN}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

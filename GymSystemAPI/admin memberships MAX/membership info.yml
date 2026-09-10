@@ -1,0 +1,26 @@
+info:
+  name: membership info
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{URL}}/membership"
+  headers:
+    - name: Authorization
+      value: "{{TOKEN_ADMIN}}"
+  body:
+    type: json
+    data: |-
+      {
+        "id": "full",
+        "days": 365,
+        "price": 1.0
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,18 @@
+info:
+  name: activate user
+  type: http
+  seq: 9
+
+http:
+  method: PATCH
+  url: "{{URL}}/user/activate/1"
+  headers:
+    - name: Authorization
+      value: "{{TOKEN_ADMIN}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,28 @@
+info:
+  name: all memberships
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{URL}}/membership"
+  headers:
+    - name: Authorization
+      value: "{{TOKEN_ADMIN}}"
+  params:
+    - name: limit
+      value: "2"
+      type: query
+      disabled: true
+    - name: next_cursor
+      value: normal
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
